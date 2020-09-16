@@ -6,6 +6,8 @@
 @using FamilyTask.Shared.Components
 @using WebClient.Abstractions
 @using Domain.ViewModel
+@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime
 
 @if (isLoaded)
 {
@@ -104,11 +106,30 @@
     {
         //   var taskList = tasksToShow.ToList();
 
-        var taskUpdated = tasksToShow.First( u => u.id == vm.TaskId);
-
         var newTaskMember = members.First(u => u.id == vm.MemberId);
 
-        taskUpdated.member = newTaskMember;
+        var taskFromAllTaskUpdated = allTasks.First(u => u.id == vm.TaskId);
+
+        taskFromAllTaskUpdated.member = newTaskMember;
+
+        if (Guid.TryParse(newTask.AssignedMemberId, out Guid selectedMemberId))
+        {
+            tasksToShow = allTasks.Where(item =>
+            {
+                if (item.member != null)
+                {
+                    return item.member.id == selectedMemberId;
+                }
+                else
+                {
+                    return false;
+                }
+            }).ToArray();
+        }
+        else
+        {
+            tasksToShow = allTasks;
+        }
 
         StateHasChanged();
     }
@@ -132,6 +153,17 @@
         newTask.Subject = "";
 
         StateHasChanged();
+
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+
+        await JSRuntime.InvokeVoidAsync("RefreshTaskForDraging");
+
+
     }
 
 
@@ -163,6 +195,7 @@
         tasksToShow = allTasks;
         showLister = true;
         showCreator = false;
+        newTask.AssignedMemberId = string.Empty;
         makeMenuItemActive(e);
         StateHasChanged();
     }

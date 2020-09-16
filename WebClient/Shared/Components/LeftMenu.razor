@@ -78,9 +78,10 @@
 <div class="menu-wrapper col-12 p-0">
     @if (MenuItems != null && MenuItems.Length > 0)
     {
+        <input type="hidden" id="dragTaskId" />
         @foreach (var item in MenuItems)
         {
-            <div id="@item.referenceId" class="menu-item col-10 offset-1 p-3 my-4 p-sm-2 @(item.isActive ? "active" : "")" @onclick="@(e => item.InvokClickCallback(item))">
+            <div id="@item.referenceId" class="@(item.referenceId == Guid.Empty ? "": "drop-menu") menu-item col-10 offset-1 p-3 my-4 p-sm-2 @(item.isActive ? "active" : "")" @onclick="@(e => item.InvokClickCallback(item))">
                 @if (item.iconColor != null)
                 {
                     <div class="avtar mr-3" style="background-color: @(item.iconColor);"> </div>
@@ -109,7 +110,12 @@
     {
         var dotNetInstance = DotNetObjectReference.Create(this);
 
-        await JSRuntime.InvokeVoidAsync("DropMe", dotNetInstance);
+        if(firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("DropMe", dotNetInstance);
+        }
+
+
     }
 
     [JSInvokable]
@@ -118,7 +124,7 @@
         await taskDataService.AssignTaskToMember(taskId,memberId);
 
         await TaskAssignedCallback.InvokeAsync(new TaskMemberVm { MemberId = Guid.Parse(memberId),
-         TaskId = Guid.Parse(taskId)});
+            TaskId = Guid.Parse(taskId)});
 
         StateHasChanged();
 
