@@ -4,7 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -48,7 +50,25 @@ namespace DataLayer
             return await
                 Query.ToListAsync(cancellationToken);
         }
-      
+
+        public async Task<IEnumerable<TEntity>> ToListAsync(string navigationPropertyPath,CancellationToken cancellationToken = default)
+        {
+            return await
+                Query.Include(navigationPropertyPath).ToListAsync(cancellationToken);
+        }
+
+        public async Task<IEnumerable<TEntity>> ToListAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
+        {
+            return await
+                Query.Where(predicate).ToListAsync(cancellationToken);
+        }
+
+        public async Task<IEnumerable<TEntity>> ToListAsync(string navigationPropertyPath, Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
+        {
+            return await
+                 Query.Include(navigationPropertyPath).Where(predicate).ToListAsync(cancellationToken);
+        }
+
         public TRepository NoTrack()
         {
             Query.AsNoTracking();
@@ -127,6 +147,17 @@ namespace DataLayer
         {
             return await Query.FirstOrDefaultAsync(cancellationToken);
         }
+
+        public virtual async Task<TEntity> SelectFirstOrDefaultAsync(string navigationPropertyPath, CancellationToken cancellationToken = default)
+        {
+            return await Query.Include(navigationPropertyPath).FirstOrDefaultAsync(cancellationToken);
+        }
+
+        public virtual async Task<TEntity> SelectFirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, string navigationPropertyPath, CancellationToken cancellationToken = default)
+        {
+            return await Query.Include(navigationPropertyPath).Where(predicate).FirstOrDefaultAsync(cancellationToken);
+        }
+
     }
 
 

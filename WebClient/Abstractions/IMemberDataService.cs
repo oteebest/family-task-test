@@ -12,5 +12,6 @@ namespace WebClient.Abstractions
         public Task<CreateMemberCommandResult> Create(CreateMemberCommand command);
         public Task<UpdateMemberCommandResult> Update(UpdateMemberCommand command);
         public Task<GetAllMembersQueryResult> GetAllMembers();
+        public Task<FamilyMember[]> GetAllMembersList();
     }
 }

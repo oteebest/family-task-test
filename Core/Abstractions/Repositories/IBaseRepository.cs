@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,6 +32,11 @@ namespace Core.Abstractions.Repositories
         /// <returns><see cref="TEntity"/></returns>
         Task<IEnumerable<TEntity>> ToListAsync(CancellationToken cancellationToken = default);
 
+        Task<IEnumerable<TEntity>> ToListAsync(string navigationPropertyPath, CancellationToken cancellationToken = default);
+
+        Task<IEnumerable<TEntity>> ToListAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
+
+        Task<IEnumerable<TEntity>> ToListAsync(string navigationPropertyPath, Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
         /// <summary>
         /// Make the query Non Tracking
         /// </summary>
@@ -106,6 +112,21 @@ namespace Core.Abstractions.Repositories
         /// <param name="cancellationToken"></param>
         /// <returns><see cref="TEntity"/></returns>
         Task<TEntity> SelectFirstOrDefaultAsync(CancellationToken cancellationToken = default);
+
+
+        /// <summary>
+        /// Used to return First or Default for the current query and includes the passed navigation;
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns><see cref="TEntity"/></returns>
+        Task<TEntity> SelectFirstOrDefaultAsync(string navigationPropertyPath, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Used to return First or Default for the current query that satifies the predicate and includes the passed navigation;
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns><see cref="TEntity"/></returns>
+        Task<TEntity> SelectFirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, string navigationPropertyPath, CancellationToken cancellationToken = default);
     }
 
 }
