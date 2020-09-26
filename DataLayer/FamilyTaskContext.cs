@@ -32,7 +32,11 @@ namespace DataLayer
                       .WithMany(u => u.Tasks)
                       .HasForeignKey(u => u.AssignedMemberId);
 
+                entity.Property(u => u.AssignedMemberId).IsRequired(false);
+
             });
+
+            
         }
     }
 }

@@ -19,6 +19,8 @@ namespace Core.Abstractions.Repositories
         /// <returns><see cref="TEntity"/></returns>
         Task<TEntity> ByIdAsync(TIdentifier id, CancellationToken cancellationToken = default);
 
+        
+
         /// <summary>
         /// Will return a single object, and throw ans exception if
         /// there is more than one record returned.

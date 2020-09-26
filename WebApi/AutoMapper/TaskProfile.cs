@@ -13,8 +13,11 @@ namespace WebApi.AutoMapper
     {
         public TaskProfile()
         {
-            CreateMap<CreateTaskCommand, Task>();           
-            CreateMap<Task, TaskVm>();
+
+            CreateMap<Task, TaskVm>()
+           .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.TaskId))
+           .ForMember(dest => dest.AssignedMemberId, opt =>
+            opt.MapFrom(src => src.Member.MemberId));
         }
     }
 }

@@ -4,7 +4,9 @@
 @inject IJSRuntime JSRuntime
 @inject ITaskDataService taskDataService
 @using WebClient.Abstractions
-@using Domain.ViewModel 
+@using Domain.ViewModel
+@using WebClient.Shared.Components
+
 <style>
     .menu-wrapper {
         background: #FBFBFB;
@@ -22,6 +24,8 @@
             align-items: center;
             border: 3px solid #FFFFFF;
         }
+
+
 
             .menu-wrapper .menu-item.active {
                 border: 3px solid #CC1778;
@@ -73,6 +77,26 @@
             height: 16px;
         }
     }
+
+
+
+    .dropzone {
+        border: 2px dashed #0087F7;
+        border-radius: 5px;
+        background: white;
+        margin-bottom: 3rem;
+    }
+
+        .dropzone .dz-message {
+            font-weight: 400;
+        }
+
+            .dropzone .dz-message .note {
+                font-size: 0.8em;
+                font-weight: 200;
+                display: block;
+                margin-top: 1.4rem;
+            }
 </style>
 
 <div class="menu-wrapper col-12 p-0">
@@ -81,13 +105,8 @@
         <input type="hidden" id="dragTaskId" />
         @foreach (var item in MenuItems)
         {
-            <div id="@item.referenceId" class="@(item.referenceId == Guid.Empty ? "": "drop-menu") menu-item col-10 offset-1 p-3 my-4 p-sm-2 @(item.isActive ? "active" : "")" @onclick="@(e => item.InvokClickCallback(item))">
-                @if (item.iconColor != null)
-                {
-                    <div class="avtar mr-3" style="background-color: @(item.iconColor);"> </div>
-                }
-                <div class="label"> @item.label </div>
-            </div>
+            <LeftMenuItem TaskDropCallback="Task_OnDrop" Item="@item" ></LeftMenuItem>
+
         }
     }
 
@@ -99,34 +118,22 @@
 @code {
 
 
-    [Parameter] public MenuItem[] MenuItems { get; set; }
+    [Parameter]
+    public MenuItem[] MenuItems { get; set; }
 
-    [Parameter] public EventCallback OnAddItem { get; set; }
+    [Parameter]
+    public EventCallback OnAddItem { get; set; }
 
     [Parameter]
     public EventCallback<TaskMemberVm> TaskAssignedCallback { get; set; }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+
+    public async Task Task_OnDrop(TaskMemberVm task)
     {
-        var dotNetInstance = DotNetObjectReference.Create(this);
+        await taskDataService.AssignTaskToMember(task.TaskId.ToString(), task.MemberId.ToString());
 
-        if(firstRender)
-        {
-            await JSRuntime.InvokeVoidAsync("DropMe", dotNetInstance);
-        }
-
+        await TaskAssignedCallback.InvokeAsync(task);
 
     }
 
-    [JSInvokable]
-    public async Task AssignTaskToMember(string taskId,string memberId)
-    {
-        await taskDataService.AssignTaskToMember(taskId,memberId);
-
-        await TaskAssignedCallback.InvokeAsync(new TaskMemberVm { MemberId = Guid.Parse(memberId),
-            TaskId = Guid.Parse(taskId)});
-
-        StateHasChanged();
-
-    }
 }

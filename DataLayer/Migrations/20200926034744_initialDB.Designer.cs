@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(FamilyTaskContext))]
-    [Migration("20200914195930_initial")]
-    partial class initial
+    [Migration("20200926034744_initialDB")]
+    partial class initialDB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,9 +23,10 @@ namespace DataLayer.Migrations
 
             modelBuilder.Entity("Domain.DataModels.Member", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Avatar")
                         .HasColumnType("nvarchar(max)");
@@ -39,6 +40,9 @@ namespace DataLayer.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("MemberId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Roles")
                         .HasColumnType("nvarchar(max)");
 
@@ -49,18 +53,22 @@ namespace DataLayer.Migrations
 
             modelBuilder.Entity("Domain.DataModels.Task", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<Guid>("AssignedMemberId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("AssignedMemberId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsComplete")
                         .HasColumnType("bit");
 
                     b.Property<string>("Subject")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("TaskId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -73,9 +81,7 @@ namespace DataLayer.Migrations
                 {
                     b.HasOne("Domain.DataModels.Member", "Member")
                         .WithMany("Tasks")
-                        .HasForeignKey("AssignedMemberId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AssignedMemberId");
                 });
 #pragma warning restore 612, 618
         }

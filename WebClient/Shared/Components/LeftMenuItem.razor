@@ -1,0 +1,60 @@
+﻿@using Microsoft.JSInterop
+@using Domain.ViewModel
+@inject IJSRuntime JSRuntime
+
+<div id="@Item.referenceId"  class="@(Item.referenceId == Guid.Empty ? "" : "drop-menu") menu-item col-10 offset-1 p-3 my-4 p-sm-2 @(Item.isActive ? "active" : "")" @onclick="@(e => Item.InvokClickCallback(Item))">
+    @if (Item.iconColor != null)
+    {
+        <div class="avtar mr-3" style="background-color: @(Item.iconColor);"> </div>
+    }
+    <div class="label"> @Item.label </div>
+
+    @if (Item.referenceId != Guid.Empty)
+    {
+        <div id="dropBox@(Item.referenceId)" style="display:none" class="menu-item col-10 offset-1 p-3 my-4 p-sm-2">Drop task here</div>
+
+    }
+
+</div>
+
+
+
+@code {
+
+
+    [Parameter]
+    public MenuItem Item { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+
+            if (Item.referenceId != Guid.Empty)
+            {
+                var dotNetInstance = DotNetObjectReference.Create(this);
+
+
+                await JSRuntime.InvokeVoidAsync("DropTask", Item.referenceId.ToString(), dotNetInstance);
+            }
+        }
+
+
+    }
+
+    [Parameter]
+    public EventCallback<TaskMemberVm> TaskDropCallback { get; set; }
+
+    [JSInvokable]
+    public async Task AssignTaskToMember(string taskId, string memberId)
+    {
+
+        await TaskDropCallback.InvokeAsync(new TaskMemberVm
+        {
+            MemberId = Guid.Parse(memberId),
+            TaskId = Guid.Parse(taskId)
+        });
+
+
+    }
+}

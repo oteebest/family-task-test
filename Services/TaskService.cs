@@ -15,20 +15,24 @@ namespace Services
     public class TaskService : ITaskService
     {
         private readonly ITaskRepository _taskRepository;
+        private readonly IMemberRepository _memberRepository;
         private readonly IMapper _mapper;
 
-        public TaskService(IMapper mapper, ITaskRepository taskRepository)
+        public TaskService(IMapper mapper, ITaskRepository taskRepository,
+            IMemberRepository memberRepository)
         {
             _mapper = mapper;
             _taskRepository = taskRepository;
+            _memberRepository = memberRepository;
         }
 
         public async Task<AssignTaskCommandResult> AssignTaskToMember(Guid taskId, Guid memberId)
         {
             var isSucceed = true;
-            var task = await _taskRepository.ByIdAsync(taskId);
+            var task = await _taskRepository.GetByTaskId(taskId);
+            var member = await _memberRepository.GetByMemberId(memberId);
 
-            task.AssignedMemberId = memberId;
+            task.AssignedMemberId = member.Id;
 
             var affectedRecordsCount = await _taskRepository.UpdateRecordAsync(task);
 
@@ -44,7 +48,7 @@ namespace Services
         public async Task<ToggleTaskActiveStatusResult> ToggleActiveStatus(Guid id)
         {
             var isSucceed = true;
-            var task = await _taskRepository.ByIdAsync(id);
+            var task = await _taskRepository.GetByTaskId(id);
 
             task.IsComplete = !task.IsComplete;
 
@@ -62,7 +66,20 @@ namespace Services
 
         public async Task<CreateTaskCommandResult> CreateTaskForMemberCommandHandler(CreateTaskCommand command)
         {
-            var task = _mapper.Map<Domain.DataModels.Task>(command);
+            Domain.DataModels.Task task;
+
+            if (string.IsNullOrEmpty(command.AssignedMemberId))
+            {
+                task = new Domain.DataModels.Task { Subject = command.Subject };
+            }
+            else
+            {
+                var member = await _memberRepository.GetByMemberId(Guid.Parse(command.AssignedMemberId));
+
+                task = new Domain.DataModels.Task { Subject = command.Subject, AssignedMemberId = member.Id };
+            }
+            
+
             var persistedTask = await _taskRepository.CreateRecordAsync(task);
 
             var taskAndMember = await _taskRepository.SelectFirstOrDefaultAsync(u => u.Id == persistedTask.Id, "Member");
@@ -107,7 +124,9 @@ namespace Services
 
         public async Task<GetAllTaskQueryResult> GetMemberTasks(Guid memberId)
         {
-            var  taskList = await _taskRepository.ToListAsync("Member", u => u.AssignedMemberId == memberId);
+            var member = await _memberRepository.ByIdAsync(memberId);
+
+            var  taskList = await _taskRepository.ToListAsync("Member", u => u.AssignedMemberId == member.Id);
 
             var result = taskList.Select(u => _mapper.Map<TaskVm>(u)).ToList();
 

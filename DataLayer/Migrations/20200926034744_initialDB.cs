@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DataLayer.Migrations
 {
-    public partial class initial : Migration
+    public partial class initialDB : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -11,7 +11,9 @@ namespace DataLayer.Migrations
                 name: "Member",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MemberId = table.Column<Guid>(nullable: false),
                     FirstName = table.Column<string>(nullable: true),
                     LastName = table.Column<string>(nullable: true),
                     Email = table.Column<string>(nullable: true),
@@ -27,8 +29,10 @@ namespace DataLayer.Migrations
                 name: "Tasks",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    AssignedMemberId = table.Column<Guid>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TaskId = table.Column<Guid>(nullable: false),
+                    AssignedMemberId = table.Column<int>(nullable: true),
                     IsComplete = table.Column<bool>(nullable: false),
                     Subject = table.Column<string>(nullable: true)
                 },
@@ -40,7 +44,7 @@ namespace DataLayer.Migrations
                         column: x => x.AssignedMemberId,
                         principalTable: "Member",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(

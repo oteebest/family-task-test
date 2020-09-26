@@ -1,14 +1,5 @@
 ﻿
 
-function Drag(e) {
-
-    console.log("Dragging", e.currentTarget);
-
-    const dragTaskHiddenInput = document.querySelector("#dragTaskId");
-
-    dragTaskHiddenInput.value = e.target.id;
-}
-
 function RefreshTaskForDraging() {
 
     const taskItems = document.querySelectorAll(".task-item");
@@ -19,44 +10,53 @@ function RefreshTaskForDraging() {
 
 }
 
-function DropMe(dotnetHelper) {
+function Drag(e) {
 
-    
-    //const taskItems = document.querySelectorAll(".task-item");
+    const dragTaskHiddenInput = document.querySelector("#dragTaskId");
 
-    //taskItems.forEach(u => { u.ondrag = null });
+    dragTaskHiddenInput.value = e.target.id;
+}
 
-    //taskItems.forEach(u => { u.addEventListener("drag", Drag) });
-        
 
-    const menuItems = document.querySelectorAll(".drop-menu");
 
-    menuItems.forEach(u => { u.ondrag = null });
 
-    menuItems.forEach(u => { u.addEventListener("drop", Drop); });
+function DropTask(memberId,dotnetHelper) {
+
+    const dropDiv = document.getElementById(`${memberId}`);
+
+    dropDiv.addEventListener("drop", Drop);
 
     async function Drop(e) {
         e.stopPropagation();
-        e.preventDefault();
-        const memberId = e.currentTarget.id;
+        e.preventDefault();        
         const taskId = document.querySelector("#dragTaskId").value;
-
-        console.log('Called Api')
-        await dotnetHelper.invokeMethodAsync("AssignTaskToMember", taskId.toString(), memberId.toString())
-
+        const dropZone = document.getElementById(`dropBox${memberId}`);
+        dropZone.style = "display:none";
+        await dotnetHelper.invokeMethodAsync("AssignTaskToMember", taskId.toString(), memberId.toString());
         document.querySelector("#dragTaskId").value = "";
 
     }
 
-    menuItems.forEach(u => u.addEventListener("dragover", allowDrop));
 
-    menuItems.forEach(u => { u.ondragover = null });
+    dropDiv.addEventListener("dragover", allowDrop);
 
     function allowDrop(e) {
         e.stopPropagation();
-       // console.log("Allow drop");
+        const dropZone = document.getElementById(`dropBox${memberId}`);
+        dropZone.style = null;
         e.preventDefault();
     }
 
+
+    dropDiv.addEventListener("dragleave", dragLeave);
+
+    function dragLeave(e) {
+        e.stopPropagation();
+        const dropZone = document.getElementById(`dropBox${memberId}`);
+        dropZone.style = "display:none";
+        e.preventDefault();
+    }
+
+
+
 }
-    

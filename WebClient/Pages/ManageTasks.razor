@@ -1,12 +1,14 @@
 @page "/manage-tasks"
 @inject HttpClient Http
 @inject ITaskDataService taskDataService
-@inject IMemberDataService memberkDataService
+@inject IMemberDataService memberDataService
 @using FamilyTask.Components
 @using FamilyTask.Shared.Components
 @using WebClient.Abstractions
 @using Domain.ViewModel
 @using Microsoft.JSInterop
+@using Domain.Commands
+@using WebClient.Exentions
 @inject IJSRuntime JSRuntime
 
 @if (isLoaded)
@@ -67,9 +69,18 @@
     {
         // members = await Http.GetFromJsonAsync<FamilyMember[]> ("sample-data/family-members.json");
         //  allTasks = await  Http.GetFromJsonAsync<TaskModel[]> ("sample-data/tasks.json");
-        members = await memberkDataService.GetAllMembersList();
+        members = await memberDataService.GetAllMembersList();
 
         allTasks = await taskDataService.GetAllTask();
+
+        SetLeftMenuItems(members);
+
+        showAllTasks(null, leftMenuItem[0]);
+        isLoaded = true;
+    }
+
+    private void SetLeftMenuItems(FamilyMember[] members)
+    {
 
         leftMenuItem = new MenuItem[members.Length + 1];
         leftMenuItem[0] = new MenuItem
@@ -90,9 +101,8 @@
             };
             leftMenuItem[i].ClickCallback += onItemClick;
         }
-        showAllTasks(null, leftMenuItem[0]);
-        isLoaded = true;
     }
+
 
     private void onAddItem()
     {
@@ -212,8 +222,26 @@
         }
     }
 
-    private void onMemberAdd()
+    private async Task onMemberAdd(FamilyMember member)
     {
-        Console.WriteLine("on member add");
+        CreateMemberCommand
+            newMember = member.Map();
+
+        var result = await memberDataService.Create(newMember);
+
+        var memberList = members.ToList();
+
+        memberList.Add(result.Map());
+
+        members = memberList.ToArray();
+
+        SetLeftMenuItems(members);
+
+        Console.WriteLine("on member add",member);
+
+        showCreator = false;
+        showLister = true;
+
+        StateHasChanged();
     }
 }
