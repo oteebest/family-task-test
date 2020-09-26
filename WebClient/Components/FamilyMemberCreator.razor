@@ -56,23 +56,23 @@
 
                 <Field class="col-6 custom-input">
                     <FieldLabel>First Name</FieldLabel>
-                    <InputText  class="form-control" @bind-Value="@member.firstname" />
+                    <InputText required  class="form-control" @bind-Value="@member.firstname" />
                 </Field>
                 <Field class="col-6 custom-input">
                     <FieldLabel>Last Name</FieldLabel>
-                    <InputText class="form-control" @bind-Value="@member.lastname" />
+                    <InputText required class="form-control" @bind-Value="@member.lastname" />
                 </Field>
             </div>
             <div class="row m-0 col-12 p-0">
                 <Field class="col-12 custom-input">
                     <FieldLabel>Email Address</FieldLabel>
-                    <InputText class="form-control" @bind-Value="@member.email" />
+                    <InputText required type="email" class="form-control" @bind-Value="@member.email" />
                 </Field>
             </div>
             <div class="row m-0 col-12 p-0">
                 <Field class="col-12 custom-input">
                     <FieldLabel>Roles</FieldLabel>
-                    <InputText  class="form-control" @bind-Value="@member.role" />
+                    <InputText required class="form-control" @bind-Value="@member.role" />
                 </Field>
             </div>
             <div class="row m-0 col-12 p-0">
@@ -86,7 +86,7 @@
                             }
                         </div>
                         <div class="col-3 p-0 text-right">
-                            <Button class="add-btn px-3" @onclick="@onAddClick">Add</Button>
+                            <Button class="add-btn px-3"  @onclick="@onAddClick">Add</Button>
                         </div>
                     </div>
                 </Field>

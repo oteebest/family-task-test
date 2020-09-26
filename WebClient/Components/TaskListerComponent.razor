@@ -51,10 +51,7 @@
     {
         <div draggable="true" id="@item.id" class="task-item p-3 my-3 row m-0">
             <div class="col-10 p-0">
-                <TaskCheckBox Task="@item" ToggleTaskCallback="@ToggleTask_OnChecked"></TaskCheckBox>
-                @*<Check TValue="bool"  Checked="@item.isDone" CheckedChanged="@(val => item.isDone = val)">
-                        <span class="@(item.isDone ? "done-text" : "")">@item.text</span>
-                    </Check>*@
+                <TaskCheckBox Task="@item" ToggleTaskCallback="@ToggleTask_OnChecked"></TaskCheckBox>              
             </div>
             <div class="col-2 p-0 d-flex justify-content-end align-items-center">
                 @if (item.member != null)

@@ -2,7 +2,7 @@
 @using Domain.ViewModel
 @inject IJSRuntime JSRuntime
 
-<div id="@Item.referenceId"  class="@(Item.referenceId == Guid.Empty ? "" : "drop-menu") menu-item col-10 offset-1 p-3 my-4 p-sm-2 @(Item.isActive ? "active" : "")" @onclick="@(e => Item.InvokClickCallback(Item))">
+<div id="@Item.referenceId" class="@(Item.referenceId == Guid.Empty ? "" : "drop-menu") menu-item col-10 offset-1 p-3 my-4 p-sm-2 @(Item.isActive ? "active" : "")" @onclick="@(e => Item.InvokClickCallback(Item))">
     @if (Item.iconColor != null)
     {
         <div class="avtar mr-3" style="background-color: @(Item.iconColor);"> </div>
@@ -11,11 +11,15 @@
 
     @if (Item.referenceId != Guid.Empty)
     {
-        <div id="dropBox@(Item.referenceId)" style="display:none" class="menu-item col-10 offset-1 p-3 my-4 p-sm-2">Drop task here</div>
+
+        <div id="dropZone@(Item.referenceId)" style="display:none"
+              class="menu-item col-6 offset-1 p-3 my-4 p-sm-2">Drop task</div>
 
     }
 
+
 </div>
+
 
 
 

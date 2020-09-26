@@ -23,15 +23,15 @@ function Drag(e) {
 function DropTask(memberId,dotnetHelper) {
 
     const dropDiv = document.getElementById(`${memberId}`);
+    const dropZone = document.getElementById(`dropZone${memberId}`);
 
     dropDiv.addEventListener("drop", Drop);
 
     async function Drop(e) {
         e.stopPropagation();
         e.preventDefault();        
-        const taskId = document.querySelector("#dragTaskId").value;
-        const dropZone = document.getElementById(`dropBox${memberId}`);
-        dropZone.style = "display:none";
+        const taskId = document.querySelector("#dragTaskId").value;        
+        dropZone.style = "display:none";       
         await dotnetHelper.invokeMethodAsync("AssignTaskToMember", taskId.toString(), memberId.toString());
         document.querySelector("#dragTaskId").value = "";
 
@@ -39,10 +39,10 @@ function DropTask(memberId,dotnetHelper) {
 
 
     dropDiv.addEventListener("dragover", allowDrop);
+   
 
     function allowDrop(e) {
         e.stopPropagation();
-        const dropZone = document.getElementById(`dropBox${memberId}`);
         dropZone.style = null;
         e.preventDefault();
     }
@@ -52,7 +52,6 @@ function DropTask(memberId,dotnetHelper) {
 
     function dragLeave(e) {
         e.stopPropagation();
-        const dropZone = document.getElementById(`dropBox${memberId}`);
         dropZone.style = "display:none";
         e.preventDefault();
     }
