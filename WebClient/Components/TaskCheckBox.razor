@@ -1,0 +1,30 @@
+﻿@inject ITaskDataService taskDataService
+@using WebClient.Abstractions
+
+<Check TValue="bool" Checked="@task.isDone" @onchange="ToggleTaskActiveStatus" CheckedChanged="@(val => task.isDone = val)">
+    <span class="@(task.isDone ? "done-text" : "")">@task.text</span>
+</Check>
+
+@code {
+    [Parameter] public TaskModel task { get; set; }
+
+
+    [Parameter]
+    public EventCallback<Guid> ToggleTaskCallback { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+
+    private async Task ToggleTaskActiveStatus()
+    {
+        await taskDataService.ToggleActiveStatus(task.id);
+
+        await ToggleTaskCallback.InvokeAsync(task.id);
+
+        StateHasChanged();
+    }
+
+
+}

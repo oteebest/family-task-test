@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using WebClient.Abstractions;
 using Microsoft.AspNetCore.Components;
 using System.Runtime.CompilerServices;
+using WebClient.Exentions;
 
 namespace WebClient.Services
 {
@@ -27,6 +28,13 @@ namespace WebClient.Services
         public async Task<GetAllMembersQueryResult> GetAllMembers()
         {
             return await _httpClient.GetJsonAsync<GetAllMembersQueryResult>("members");
+        }
+
+        public async Task<FamilyMember[]> GetAllMembersList()
+        {
+            var result = await _httpClient.GetJsonAsync<GetAllMembersQueryResult>("members");
+
+            return result.Payload.Select(u => u.Map()).ToArray();
         }
 
         public async Task<UpdateMemberCommandResult> Update(UpdateMemberCommand command)

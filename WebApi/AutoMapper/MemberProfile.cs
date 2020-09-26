@@ -15,7 +15,9 @@ namespace WebApi.AutoMapper
         {
             CreateMap<CreateMemberCommand, Member>();
             CreateMap<UpdateMemberCommand, Member>();
-            CreateMap<Member, MemberVm>();
+            CreateMap<Member, MemberVm>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.MemberId));
+
         }
     }
 }
